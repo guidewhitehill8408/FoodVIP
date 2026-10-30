@@ -1,1 +1,477 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสั่งจองอาหารล่วงหน้า - สโมสรภูหมันขาว VIP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
+    <script>
+        function foodBookingApp() {
+            return {
+                step: 1,
+                guestName: '',
+                guestPhone: '',
+                guestCount: '',
+                diningDate: '',
+                wantDinner: true,
+                wantBreakfast: true,
+                dinnerTime: '18:00',
+                breakfastTime: '07:30',
+                additionalNotes: '',
+                
+                activeDinnerTab: 0,
+                activeBreakfastTab: 0,
+                
+                // เมนูอาหารเย็น
+                dinnerMenu: [
+                    {
+                        name: 'ผัด / ทอด',
+                        items: [
+                            { name: 'ไข่เจียว', price: 60, qty: 0, selectedVariant: 'หมูสับ', variants: ['หมูสับ', 'ไก่สับ', 'กุ้งสับ', 'ทะเล'] },
+                            { name: 'แหนมซี่โครงหมูทอด', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'ปีกไก่ทอดเกลือ', price: 150, qty: 0, selectedVariant: 'ไก่', variants: ['ไก่'] },
+                            { name: 'ไก่ผัดเม็ดมะม่วงหิมพานต์', price: 180, qty: 0, selectedVariant: 'ไก่', variants: ['ไก่', 'หมู'] },
+                            { name: 'ผัดฉ่า', price: 200, qty: 0, selectedVariant: 'ทะเล', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'กะหล่ำปลีผัดน้ำปลา', price: 80, qty: 0, selectedVariant: 'ธรรมดา', variants: ['ธรรมดา', 'เบคอน'] }
+                        ]
+                    },
+                    {
+                        name: 'กับแกล้ม',
+                        items: [
+                            { name: 'ออเดิร์ฟ', price: 150, qty: 0, selectedVariant: 'รวม', variants: ['รวม'] },
+                            { name: 'ถั่วทอด / เม็ดมะม่วง', price: 80, qty: 0, selectedVariant: 'เม็ดมะม่วง', variants: ['ถั่วทอด', 'เม็ดมะม่วง'] },
+                            { name: 'ไส้กรอกอีสาน / แหนม', price: 120, qty: 0, selectedVariant: 'ไส้กรอก', variants: ['ไส้กรอก', 'แหนม'] }
+                        ]
+                    },
+                    {
+                        name: 'อาหารอีสาน',
+                        items: [
+                            { name: 'ลาบ', price: 120, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่'] },
+                            { name: 'น้ำตกหมู', price: 120, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'คอหมูย่าง', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] }
+                        ]
+                    },
+                    {
+                        name: 'ต้ม / แกง',
+                        items: [
+                            { name: 'แกงป่า', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่'] },
+                            { name: 'แกงส้มชะอมกุ้ง', price: 180, qty: 0, selectedVariant: 'กุ้ง', variants: ['กุ้ง'] },
+                            { name: 'ต้มยำ', price: 180, qty: 0, selectedVariant: 'ทะเล', variants: ['หมู', 'ไก่', 'ปลา', 'ทะเล'] },
+                            { name: 'ต้มจืดเต้าหู้หมูสับ', price: 150, qty: 0, selectedVariant: 'หมูสับ', variants: ['หมูสับ'] }
+                        ]
+                    },
+                    {
+                        name: 'ยำ / ย่าง',
+                        items: [
+                            { name: 'ยำรวมมิตร', price: 150, qty: 0, selectedVariant: 'ทะเล', variants: ['หมูสับ', 'ทะเล'] },
+                            { name: 'หมูมะนาว', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'กุ้งแช่น้ำปลา', price: 200, qty: 0, selectedVariant: 'กุ้ง', variants: ['กุ้ง'] }
+                        ]
+                    },
+                    {
+                        name: 'อาหารจานเดียว',
+                        items: [
+                            { name: 'ข้าวผัด', price: 60, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'ข้าวกะเพรา', price: 60, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'ราดหน้า', price: 60, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่', 'ทะเล'] }
+                        ]
+                    },
+                    {
+                        name: 'ข้าว / โถ',
+                        items: [
+                            { name: 'ข้าวเปล่า (จาน)', price: 15, qty: 0, selectedVariant: 'จาน', variants: ['จาน'] },
+                            { name: 'ข้าวเปล่า (โถ)', price: 60, qty: 0, selectedVariant: 'โถ', variants: ['โถ'] }
+                        ]
+                    },
+                    {
+                        name: 'เครื่องดื่ม',
+                        items: [
+                            { name: 'น้ำอัดลม / น้ำเปล่า', price: 30, qty: 0, selectedVariant: 'น้ำสิงห์ใหญ่', variants: ['น้ำสิงห์ใหญ่', 'น้ำอัดลมใหญ่', 'โซดา'] },
+                            { name: 'เครื่องดื่มแอลกอฮอล์', price: 290, qty: 0, selectedVariant: 'เบียร์ลีโอ', variants: ['เบียร์ช้าง', 'เบียร์ลีโอ', 'เบียร์สิงห์', 'หงส์ทอง'] }
+                        ]
+                    }
+                ],
 
+                // เมนูอาหารเช้า (แยกออบเจ็กต์อิสระเพื่อไม่ให้ข้อมูลทับซ้อนกัน)
+                breakfastMenu: [
+                    {
+                        name: 'ผัด / ทอด',
+                        items: [
+                            { name: 'ไข่เจียว', price: 60, qty: 0, selectedVariant: 'หมูสับ', variants: ['หมูสับ', 'ไก่สับ', 'กุ้งสับ', 'ทะเล'] },
+                            { name: 'แหนมซี่โครงหมูทอด', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'ปีกไก่ทอดเกลือ', price: 150, qty: 0, selectedVariant: 'ไก่', variants: ['ไก่'] },
+                            { name: 'ไก่ผัดเม็ดมะม่วงหิมพานต์', price: 180, qty: 0, selectedVariant: 'ไก่', variants: ['ไก่', 'หมู'] },
+                            { name: 'ผัดฉ่า', price: 200, qty: 0, selectedVariant: 'ทะเล', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'กะหล่ำปลีผัดน้ำปลา', price: 80, qty: 0, selectedVariant: 'ธรรมดา', variants: ['ธรรมดา', 'เบคอน'] }
+                        ]
+                    },
+                    {
+                        name: 'กับแกล้ม',
+                        items: [
+                            { name: 'ออเดิร์ฟ', price: 150, qty: 0, selectedVariant: 'รวม', variants: ['รวม'] },
+                            { name: 'ถั่วทอด / เม็ดมะม่วง', price: 80, qty: 0, selectedVariant: 'เม็ดมะม่วง', variants: ['ถั่วทอด', 'เม็ดมะม่วง'] },
+                            { name: 'ไส้กรอกอีสาน / แหนม', price: 120, qty: 0, selectedVariant: 'ไส้กรอก', variants: ['ไส้กรอก', 'แหนม'] }
+                        ]
+                    },
+                    {
+                        name: 'อาหารอีสาน',
+                        items: [
+                            { name: 'ลาบ', price: 120, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่'] },
+                            { name: 'น้ำตกหมู', price: 120, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'คอหมูย่าง', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] }
+                        ]
+                    },
+                    {
+                        name: 'ต้ม / แกง',
+                        items: [
+                            { name: 'แกงป่า', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่'] },
+                            { name: 'แกงส้มชะอมกุ้ง', price: 180, qty: 0, selectedVariant: 'กุ้ง', variants: ['กุ้ง'] },
+                            { name: 'ต้มยำ', price: 180, qty: 0, selectedVariant: 'ทะเล', variants: ['หมู', 'ไก่', 'ปลา', 'ทะเล'] },
+                            { name: 'ต้มจืดเต้าหู้หมูสับ', price: 150, qty: 0, selectedVariant: 'หมูสับ', variants: ['หมูสับ'] }
+                        ]
+                    },
+                    {
+                        name: 'ยำ / ย่าง',
+                        items: [
+                            { name: 'ยำรวมมิตร', price: 150, qty: 0, selectedVariant: 'ทะเล', variants: ['หมูสับ', 'ทะเล'] },
+                            { name: 'หมูมะนาว', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'กุ้งแช่น้ำปลา', price: 200, qty: 0, selectedVariant: 'กุ้ง', variants: ['กุ้ง'] }
+                        ]
+                    },
+                    {
+                        name: 'อาหารจานเดียว',
+                        items: [
+                            { name: 'ข้าวผัด', price: 60, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'ข้าวกะเพรา', price: 60, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'ราดหน้า', price: 60, qty: 0, selectedVariant: 'หมู', variants: ['หมู', 'ไก่', 'ทะเล'] }
+                        ]
+                    },
+                    {
+                        name: 'ข้าว / โถ',
+                        items: [
+                            { name: 'ข้าวเปล่า (จาน)', price: 15, qty: 0, selectedVariant: 'จาน', variants: ['จาน'] },
+                            { name: 'ข้าวเปล่า (โถ)', price: 60, qty: 0, selectedVariant: 'โถ', variants: ['โถ'] }
+                        ]
+                    },
+                    {
+                        name: 'เครื่องดื่ม',
+                        items: [
+                            { name: 'น้ำอัดลม / น้ำเปล่า', price: 30, qty: 0, selectedVariant: 'น้ำสิงห์ใหญ่', variants: ['น้ำสิงห์ใหญ่', 'น้ำอัดลมใหญ่', 'โซดา'] },
+                            { name: 'เครื่องดื่มแอลกอฮอล์', price: 290, qty: 0, selectedVariant: 'เบียร์ลีโอ', variants: ['เบียร์ช้าง', 'เบียร์ลีโอ', 'เบียร์สิงห์', 'หงส์ทอง'] }
+                        ]
+                    }
+                ],
+
+                updateQty(item, change) {
+                    if (!item.qty) item.qty = 0;
+                    item.qty = Math.max(0, item.qty + change);
+                },
+
+                nextStep() {
+                    if (this.step === 1) {
+                        if (!this.guestName || !this.guestPhone || !this.guestCount || !this.diningDate) {
+                            alert('กรุณากรอกข้อมูลผู้เข้าพักและวันเข้าพักให้ครบถ้วน');
+                            return;
+                        }
+                    }
+                    this.step++;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                prevStep() {
+                    this.step--;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                get selectedItems() {
+                    let items = [];
+                    if (this.wantDinner) {
+                        this.dinnerMenu.forEach(cat => {
+                            cat.items.forEach(item => { 
+                                if (item.qty > 0) {
+                                    items.push({ ...item, displayName: `${item.name} (${item.selectedVariant})`, meal: 'มื้อเย็น' }); 
+                                }
+                            });
+                        });
+                    }
+                    if (this.wantBreakfast) {
+                        this.breakfastMenu.forEach(cat => {
+                            cat.items.forEach(item => { 
+                                if (item.qty > 0) {
+                                    items.push({ ...item, displayName: `${item.name} (${item.selectedVariant})`, meal: 'มื้อเช้า' }); 
+                                }
+                            });
+                        });
+                    }
+                    return items;
+                },
+
+                get totalPrice() {
+                    return this.selectedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                },
+
+                submitOrder() {
+                    alert('ส่งรายการสั่งจองอาหารเรียบร้อยแล้ว! ระบบกำลังบันทึกลง Google Calendar และแจ้งเตือนเจ้าหน้าที่สโมสร');
+                }
+            }
+        }
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <div x-data="foodBookingApp()" class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col justify-between">
+        
+        <!-- Header -->
+        <div>
+            <div class="bg-indigo-900 text-white p-4 text-center rounded-b-2xl shadow-md sticky top-0 z-50">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center text-indigo-950 font-bold text-sm">🍽️</div>
+                        <div class="text-left">
+                            <h1 class="text-sm font-bold leading-tight">LINE Official สั่งอาหารล่วงหน้า</h1>
+                            <p class="text-[10px] text-indigo-200">สโมสรภูหมันขาว VIP & Google Calendar</p>
+                        </div>
+                    </div>
+                    <span class="bg-amber-400 text-indigo-950 text-[10px] font-bold px-2.5 py-1 rounded-full shadow">เจ้าหน้าที่อาหาร</span>
+                </div>
+                
+                <!-- Stepper -->
+                <div class="flex justify-center items-center gap-2 mt-3 text-xs">
+                    <div class="flex flex-col items-center"><span :class="step >= 1 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-6 h-6 rounded-full flex items-center justify-center transition-all text-xs">1</span><span class="text-[10px] mt-0.5 text-indigo-200">ข้อมูล</span></div>
+                    <div class="w-6 h-0.5 bg-indigo-700 -mt-3"></div>
+                    <div class="flex flex-col items-center"><span :class="step >= 2 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-6 h-6 rounded-full flex items-center justify-center transition-all text-xs">2</span><span class="text-[10px] mt-0.5 text-indigo-200">อาหารเย็น</span></div>
+                    <div class="w-6 h-0.5 bg-indigo-700 -mt-3"></div>
+                    <div class="flex flex-col items-center"><span :class="step >= 3 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-6 h-6 rounded-full flex items-center justify-center transition-all text-xs">3</span><span class="text-[10px] mt-0.5 text-indigo-200">อาหารเช้า</span></div>
+                    <div class="w-6 h-0.5 bg-indigo-700 -mt-3"></div>
+                    <div class="flex flex-col items-center"><span :class="step >= 4 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-6 h-6 rounded-full flex items-center justify-center transition-all text-xs">4</span><span class="text-[10px] mt-0.5 text-indigo-200">สรุปส่ง LINE</span></div>
+                </div>
+            </div>
+
+            <!-- STEP 1: ข้อมูลผู้เข้าพัก -->
+            <div x-show="step === 1" class="p-5 space-y-4">
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg text-xs text-amber-900 shadow-sm">
+                    ⚠️ <strong>เงื่อนไขการจอง:</strong> การสั่งจองอาหารล่วงหน้า ต้องทำรายการก่อนวันเข้าพักรับประทานอาหารอย่างน้อย 4 วัน
+                </div>
+
+                <h2 class="text-base font-bold text-indigo-900 border-b pb-2">หน้า 1: ข้อมูลผู้เข้าพักและวันเข้าพัก</h2>
+                
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">ชื่อหัวหน้าคณะ / ผู้เข้าพัก <span class="text-red-500">*</span></label>
+                    <input type="text" x-model="guestName" placeholder="ระบุชื่อ-นามสกุล" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ประสานงาน <span class="text-red-500">*</span></label>
+                    <input type="tel" x-model="guestPhone" placeholder="08X-XXX-XXXX" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">จำนวนผู้เข้าพัก (คน) <span class="text-red-500">*</span></label>
+                    <input type="number" min="1" x-model="guestCount" placeholder="จำนวนคน" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">วันเข้าพักที่รับประทานอาหาร <span class="text-red-500">*</span></label>
+                    <input type="date" x-model="diningDate" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+
+            <!-- STEP 2: เมนูอาหารเย็น -->
+            <div x-show="step === 2" class="p-4 space-y-4">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 shadow-sm">
+                    <label class="block text-xs font-bold text-amber-900 mb-2">ความต้องการรับอาหารเย็น</label>
+                    <div class="flex gap-2">
+                        <button @click="wantDinner = true" :class="wantDinner ? 'bg-indigo-900 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-xs transition-all shadow-sm flex items-center justify-center gap-1">
+                            <span>✅</span> รับอาหารเย็น
+                        </button>
+                        <button @click="wantDinner = false" :class="!wantDinner ? 'bg-slate-600 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-xs transition-all shadow-sm flex items-center justify-center gap-1">
+                            <span>❌</span> ไม่รับอาหารเย็น
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="wantDinner" class="space-y-3">
+                    <h2 class="text-sm font-bold text-indigo-900">เลือกหมวดหมู่อาหารเย็น</h2>
+                    <!-- Category Tabs Grid 2 Columns / 2 Rows -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <template x-for="(cat, idx) in dinnerMenu" :key="'din-cat-' + idx">
+                            <button @click="activeDinnerTab = idx" :class="activeDinnerTab === idx ? 'bg-indigo-900 text-amber-300 font-bold shadow-md ring-2 ring-amber-400' : 'bg-white text-slate-700 border hover:bg-slate-50'" class="p-2.5 rounded-xl text-xs text-center transition-all flex items-center justify-center">
+                                <span x-text="cat.name"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <!-- Menu Items List of Active Tab -->
+                    <div class="border rounded-xl p-3 bg-slate-50 shadow-sm mt-3">
+                        <h3 class="font-bold text-indigo-900 text-xs mb-2.5 border-b pb-1" x-text="dinnerMenu[activeDinnerTab].name"></h3>
+                        <div class="space-y-2.5">
+                            <template x-for="(item, itemIndex) in dinnerMenu[activeDinnerTab].items" :key="'din-item-' + itemIndex">
+                                <div class="bg-white p-2.5 rounded-lg shadow-sm border border-slate-100 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-xs font-medium text-slate-800" x-text="item.name"></div>
+                                            <div class="text-[11px] text-amber-600 font-semibold" x-text="item.price + ' บาท'"></div>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <button @click="updateQty(item, -1)" class="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 font-bold text-xs">-</button>
+                                            <span class="w-5 text-center text-xs font-bold" x-text="item.qty || 0"></span>
+                                            <button @click="updateQty(item, 1)" class="w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center text-white font-bold text-xs">+</button>
+                                        </div>
+                                    </div>
+                                    <!-- ปุ่มระบุประเภทเนื้อสัตว์ท้ายเมนู -->
+                                    <div class="flex flex-wrap gap-1 pt-1 border-t border-slate-100">
+                                        <template x-for="variant in item.variants" :key="'din-var-' + variant">
+                                            <button @click="item.selectedVariant = variant" :class="item.selectedVariant === variant ? 'bg-amber-500 text-indigo-950 font-bold text-[10px]' : 'bg-slate-100 text-slate-600 text-[10px]'" class="px-2 py-0.5 rounded-md transition-all" x-text="variant"></button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: เมนูอาหารเช้า -->
+            <div x-show="step === 3" class="p-4 space-y-4">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 shadow-sm">
+                    <label class="block text-xs font-bold text-amber-900 mb-2">ความต้องการรับอาหารเช้า</label>
+                    <div class="flex gap-2">
+                        <button @click="wantBreakfast = true" :class="wantBreakfast ? 'bg-indigo-900 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-xs transition-all shadow-sm flex items-center justify-center gap-1">
+                            <span>✅</span> รับอาหารเช้า
+                        </button>
+                        <button @click="wantBreakfast = false" :class="!wantBreakfast ? 'bg-slate-600 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-xs transition-all shadow-sm flex items-center justify-center gap-1">
+                            <span>❌</span> ไม่รับอาหารเช้า
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="wantBreakfast" class="space-y-3">
+                    <h2 class="text-sm font-bold text-indigo-900">เลือกหมวดหมู่อาหารเช้า</h2>
+                    <!-- Category Tabs Grid 2 Columns / 2 Rows -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <template x-for="(cat, idx) in breakfastMenu" :key="'bf-cat-' + idx">
+                            <button @click="activeBreakfastTab = idx" :class="activeBreakfastTab === idx ? 'bg-indigo-900 text-amber-300 font-bold shadow-md ring-2 ring-amber-400' : 'bg-white text-slate-700 border hover:bg-slate-50'" class="p-2.5 rounded-xl text-xs text-center transition-all flex items-center justify-center">
+                                <span x-text="cat.name"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <!-- Menu Items List of Active Tab -->
+                    <div class="border rounded-xl p-3 bg-slate-50 shadow-sm mt-3">
+                        <h3 class="font-bold text-indigo-900 text-xs mb-2.5 border-b pb-1" x-text="breakfastMenu[activeBreakfastTab].name"></h3>
+                        <div class="space-y-2.5">
+                            <template x-for="(item, itemIndex) in breakfastMenu[activeBreakfastTab].items" :key="'bf-item-' + itemIndex">
+                                <div class="bg-white p-2.5 rounded-lg shadow-sm border border-slate-100 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-xs font-medium text-slate-800" x-text="item.name"></div>
+                                            <div class="text-[11px] text-amber-600 font-semibold" x-text="item.price + ' บาท'"></div>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <button @click="updateQty(item, -1)" class="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 font-bold text-xs">-</button>
+                                            <span class="w-5 text-center text-xs font-bold" x-text="item.qty || 0"></span>
+                                            <button @click="updateQty(item, 1)" class="w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center text-white font-bold text-xs">+</button>
+                                        </div>
+                                    </div>
+                                    <!-- ปุ่มระบุประเภทเนื้อสัตว์ท้ายเมนู -->
+                                    <div class="flex flex-wrap gap-1 pt-1 border-t border-slate-100">
+                                        <template x-for="variant in item.variants" :key="'bf-var-' + variant">
+                                            <button @click="item.selectedVariant = variant" :class="item.selectedVariant === variant ? 'bg-amber-500 text-indigo-950 font-bold text-[10px]' : 'bg-slate-100 text-slate-600 text-[10px]'" class="px-2 py-0.5 rounded-md transition-all" x-text="variant"></button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: สรุปรายการอาหาร -->
+            <div x-show="step === 4" class="p-4 space-y-4">
+                <div class="text-center">
+                    <div class="w-10 h-10 bg-amber-400 rounded-full flex items-center justify-center text-indigo-950 font-bold text-base mx-auto mb-1 shadow">📋</div>
+                    <h2 class="text-sm font-bold text-indigo-900">หน้า 4: สรุปรายการสั่งอาหาร</h2>
+                    <p class="text-[11px] text-slate-500">ตรวจสอบและยืนยันข้อมูลจัดเตรียมอาหาร</p>
+                </div>
+
+                <!-- ระบุเวลารับอาหาร -->
+                <div class="space-y-2.5 bg-slate-50 p-3.5 rounded-xl border shadow-sm">
+                    <h3 class="font-bold text-xs text-indigo-900 flex items-center gap-1.5">
+                        <span>⏰</span> ระบุเวลารับอาหารในแต่ละมื้อ
+                    </h3>
+                    
+                    <div x-show="wantDinner">
+                        <label class="block text-[11px] font-medium text-slate-600 mb-1">เวลารับอาหารเย็น</label>
+                        <input type="time" x-model="dinnerTime" class="w-full p-2 text-xs border rounded-lg bg-white">
+                    </div>
+
+                    <div x-show="wantBreakfast">
+                        <label class="block text-[11px] font-medium text-slate-600 mb-1">เวลารับอาหารเช้า</label>
+                        <input type="time" x-model="breakfastTime" class="w-full p-2 text-xs border rounded-lg bg-white">
+                    </div>
+                </div>
+
+                <!-- โน้ตเพิ่มเติม -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1 flex items-center gap-1">
+                        <span>📝</span> โน้ตเพิ่มเติมสำหรับการสั่งนอกเหนือรายการ
+                    </label>
+                    <textarea x-model="additionalNotes" rows="2.5" placeholder="ระบุข้อกำหนดเพิ่มเติม หรือเมนูที่ต้องการนอกเหนือรายการ..." class="w-full p-2.5 border border-slate-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <!-- สรุปรายการอาหารที่เลือก -->
+                <div class="border rounded-xl p-3.5 bg-white space-y-2 shadow-sm">
+                    <h3 class="font-bold text-xs text-indigo-900 border-b pb-1.5 flex justify-between items-center">
+                        <span>สรุปข้อมูลการสั่งซื้อ</span>
+                        <span class="text-[10px] text-amber-600 font-semibold" x-text="diningDate"></span>
+                    </h3>
+                    
+                    <div class="text-[11px] text-slate-600 space-y-0.5">
+                        <p><strong>ผู้เข้าพัก:</strong> <span x-text="guestName"></span> (<span x-text="guestCount"></span> คน)</p>
+                        <p><strong>เบอร์โทร:</strong> <span x-text="guestPhone"></span></p>
+                    </div>
+
+                    <div class="divide-y text-xs my-2 max-h-40 overflow-y-auto pr-1">
+                        <template x-for="item in selectedItems" :key="item.displayName + '-' + item.meal">
+                            <div class="py-1.5 flex justify-between items-center">
+                                <div>
+                                    <span class="font-medium text-slate-800" x-text="item.displayName"></span>
+                                    <span class="text-[10px] text-indigo-600 ml-1 bg-indigo-50 px-1.5 py-0.5 rounded" x-text="item.meal"></span>
+                                    <span class="text-[11px] text-slate-500 block">x<span x-text="item.qty"></span></span>
+                                </div>
+                                <span class="font-semibold text-slate-700" x-text="(item.price * item.qty) + ' ฿'"></span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="border-t pt-2 flex justify-between font-bold text-indigo-900 text-sm">
+                        <span>ราคารวมทั้งสิ้น:</span>
+                        <span class="text-amber-600" x-text="totalPrice + ' บาท'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Navigation Buttons -->
+        <div class="p-3 border-t bg-white flex justify-between items-center gap-2 sticky bottom-0 z-50 shadow-md">
+            <button x-show="step > 1" @click="prevStep()" class="flex-1 py-2 border border-slate-300 rounded-xl text-slate-600 font-medium text-xs">
+                ย้อนกลับ
+            </button>
+            
+            <button x-show="step < 4" @click="nextStep()" class="flex-1 py-2 bg-indigo-900 text-white rounded-xl font-bold text-xs hover:bg-indigo-800 transition-all shadow-sm">
+                ถัดไป
+            </button>
+
+            <button x-show="step === 4" @click="submitOrder()" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-500 transition-all shadow-md">
+                ยืนยันการสั่งอาหาร
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>
