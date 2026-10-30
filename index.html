@@ -5,233 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบสั่งจองอาหารล่วงหน้า - สโมสรภูหมันขาว VIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; }
     </style>
-</head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
-
-    <div x-data="foodBookingApp()" class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col justify-between">
-        
-        <!-- Header -->
-        <div>
-            <div class="bg-indigo-900 text-white p-4 text-center rounded-b-2xl shadow-md">
-                <h1 class="text-xl font-bold">สโมสรภูหมันขาว VIP</h1>
-                <p class="text-xs text-indigo-200 mt-1">ระบบสั่งจองอาหารล่วงหน้า</p>
-                
-                <!-- Progress Indicator -->
-                <div class="flex justify-center items-center gap-2 mt-4 text-xs">
-                    <span :class="step >= 1 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-7 h-7 rounded-full flex items-center justify-center transition-all">1</span>
-                    <div class="w-4 h-0.5 bg-indigo-700"></div>
-                    <span :class="step >= 2 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-7 h-7 rounded-full flex items-center justify-center transition-all">2</span>
-                    <div class="w-4 h-0.5 bg-indigo-700"></div>
-                    <span :class="step >= 3 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-7 h-7 rounded-full flex items-center justify-center transition-all">3</span>
-                    <div class="w-4 h-0.5 bg-indigo-700"></div>
-                    <span :class="step >= 4 ? 'bg-amber-400 text-indigo-950 font-bold' : 'bg-indigo-800 text-indigo-300'" class="w-7 h-7 rounded-full flex items-center justify-center transition-all">4</span>
-                </div>
-            </div>
-
-            <!-- STEP 1: ข้อมูลผู้เข้าพัก -->
-            <div x-show="step === 1" class="p-5 space-y-4">
-                <h2 class="text-lg font-bold text-indigo-900 border-b pb-2">หน้า 1: ข้อมูลผู้เข้าพักและวันเข้าพัก</h2>
-                
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อหัวหน้าคณะ / ผู้เข้าพัก <span class="text-red-500">*</span></label>
-                    <input type="text" x-model="guestName" placeholder="ระบุชื่อ-นามสกุล" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ประสานงาน <span class="text-red-500">*</span></label>
-                    <input type="tel" x-model="guestPhone" placeholder="08X-XXX-XXXX" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">จำนวนผู้เข้าพัก (คน) <span class="text-red-500">*</span></label>
-                    <input type="number" min="1" x-model="guestCount" placeholder="จำนวนคน" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">วันเข้าพักที่รับประทานอาหาร <span class="text-red-500">*</span></label>
-                    <input type="date" x-model="diningDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-            </div>
-
-            <!-- STEP 2: เมนูอาหารเย็น -->
-            <div x-show="step === 2" class="p-5 space-y-4">
-                <h2 class="text-lg font-bold text-indigo-900 border-b pb-2">หน้า 2: รายการอาหารเย็น</h2>
-                
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
-                    <label class="block text-sm font-bold text-amber-900 mb-2">ความต้องการรับอาหารเย็น</label>
-                    <div class="flex gap-3">
-                        <button @click="wantDinner = true" :class="wantDinner ? 'bg-indigo-900 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-sm transition-all">
-                            รับอาหารเย็น
-                        </button>
-                        <button @click="wantDinner = false" :class="!wantDinner ? 'bg-slate-600 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-sm transition-all">
-                            ไม่รับอาหารเย็น
-                        </button>
-                    </div>
-                </div>
-
-                <!-- แสดงรายการอาหารเย็นเมื่อเลือก "รับอาหารเย็น" -->
-                <div x-show="wantDinner" class="space-y-4 mt-4">
-                    <template x-for="(category, catIndex) in dinnerMenu" :key="catIndex">
-                        <div class="border rounded-xl p-3 bg-slate-50">
-                            <h3 class="font-bold text-indigo-900 text-sm mb-2" x-text="category.name"></h3>
-                            <div class="space-y-2">
-                                <template x-for="(item, itemIndex) in category.items" :key="itemIndex">
-                                    <div class="flex items-center justify-between bg-white p-2 rounded-lg shadow-sm border border-slate-100">
-                                        <div>
-                                            <div class="text-sm font-medium text-slate-800" x-text="item.name"></div>
-                                            <div class="text-xs text-amber-600 font-semibold" x-text="item.price + ' บาท'"></div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <button @click="updateQty(item, -1)" class="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 font-bold">-</button>
-                                            <span class="w-6 text-center text-sm font-bold" x-text="item.qty || 0"></span>
-                                            <button @click="updateQty(item, 1)" class="w-7 h-7 bg-indigo-900 rounded-full flex items-center justify-center text-white font-bold">+</button>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <!-- STEP 3: เมนูอาหารเช้า -->
-            <div x-show="step === 3" class="p-5 space-y-4">
-                <h2 class="text-lg font-bold text-indigo-900 border-b pb-2">หน้า 3: รายการอาหารเช้า</h2>
-                
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
-                    <label class="block text-sm font-bold text-amber-900 mb-2">ความต้องการรับอาหารเช้า</label>
-                    <div class="flex gap-3">
-                        <button @click="wantBreakfast = true" :class="wantBreakfast ? 'bg-indigo-900 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-sm transition-all">
-                            รับอาหารเช้า
-                        </button>
-                        <button @click="wantBreakfast = false" :class="!wantBreakfast ? 'bg-slate-600 text-white font-bold' : 'bg-white text-slate-700 border'" class="flex-1 py-2 rounded-lg text-sm transition-all">
-                            ไม่รับอาหารเช้า
-                        </button>
-                    </div>
-                </div>
-
-                <!-- แสดงรายการอาหารเช้าเมื่อเลือก "รับอาหารเช้า" -->
-                <div x-show="wantBreakfast" class="space-y-4 mt-4">
-                    <template x-for="(category, catIndex) in breakfastMenu" :key="catIndex">
-                        <div class="border rounded-xl p-3 bg-slate-50">
-                            <h3 class="font-bold text-indigo-900 text-sm mb-2" x-text="category.name"></h3>
-                            <div class="space-y-2">
-                                <template x-for="(item, itemIndex) in category.items" :key="itemIndex">
-                                    <div class="flex items-center justify-between bg-white p-2 rounded-lg shadow-sm border border-slate-100">
-                                        <div>
-                                            <div class="text-sm font-medium text-slate-800" x-text="item.name"></div>
-                                            <div class="text-xs text-amber-600 font-semibold" x-text="item.price + ' บาท'"></div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <button @click="updateQty(item, -1)" class="w-7 h-7 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 font-bold">-</button>
-                                            <span class="w-6 text-center text-sm font-bold" x-text="item.qty || 0"></span>
-                                            <button @click="updateQty(item, 1)" class="w-7 h-7 bg-indigo-900 rounded-full flex items-center justify-center text-white font-bold">+</button>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <!-- STEP 4: สรุปรายการอาหาร -->
-            <div x-show="step === 4" class="p-5 space-y-4">
-                <h2 class="text-lg font-bold text-indigo-900 border-b pb-2">หน้า 4: สรุปรายการสั่งอาหาร</h2>
-
-                <!-- ระบุเวลารับอาหาร -->
-                <div class="space-y-3 bg-slate-50 p-3 rounded-xl border">
-                    <h3 class="font-bold text-sm text-indigo-900">ระบุเวลารับอาหาร</h3>
-                    
-                    <div x-show="wantDinner">
-                        <label class="block text-xs font-medium text-slate-600 mb-1">เวลารับอาหารเย็น</label>
-                        <input type="time" x-model="dinnerTime" class="w-full p-2 border rounded-lg bg-white">
-                    </div>
-
-                    <div x-show="wantBreakfast">
-                        <label class="block text-xs font-medium text-slate-600 mb-1">เวลารับอาหารเช้า</label>
-                        <input type="time" x-model="breakfastTime" class="w-full p-2 border rounded-lg bg-white">
-                    </div>
-                </div>
-
-                <!-- โน้ตเพิ่มเติม -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">โน้ตเพิ่มเติมสำหรับการสั่งนอกเหนือรายการ</label>
-                    <textarea x-model="additionalNotes" rows="3" placeholder="ระบุข้อกำหนดเพิ่มเติม หรือเมนูที่ต้องการนอกเหนือรายการ..." class="w-full p-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-                </div>
-
-                <!-- สรุปรายการอาหารที่เลือก -->
-                <div class="border rounded-xl p-3 bg-white space-y-2">
-                    <h3 class="font-bold text-sm text-indigo-900 border-b pb-1">รายการสั่งซื้อทั้งหมด</h3>
-                    
-                    <div class="text-xs text-slate-600">
-                        <p><strong>ผู้เข้าพัก:</strong> <span x-text="guestName"></span> (<span x-text="guestCount"></span> คน)</p>
-                        <p><strong>เบอร์โทร:</strong> <span x-text="guestPhone"></span></p>
-                        <p><strong>วันที่:</strong> <span x-text="diningDate"></span></p>
-                    </div>
-
-                    <div class="divide-y text-sm">
-                        <template x-for="item in selectedItems" :key="item.name">
-                            <div class="py-1.5 flex justify-between">
-                                <span><span x-text="item.name"></span> x<span x-text="item.qty"></span></span>
-                                <span class="font-semibold text-slate-700" x-text="(item.price * item.qty) + ' ฿'"></span>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="border-t pt-2 flex justify-between font-bold text-indigo-900">
-                        <span>ราคารวมทั้งสิ้น:</span>
-                        <span class="text-lg text-amber-600" x-text="totalPrice + ' บาท'"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer Navigation Buttons -->
-        <div class="p-4 border-t bg-white flex justify-between items-center gap-3">
-            <button x-show="step > 1" @click="step--" class="flex-1 py-2.5 border border-slate-300 rounded-xl text-slate-600 font-medium">
-                ย้อนกลับ
-            </button>
-            
-            <button x-show="step < 4" @click="nextStep()" class="flex-1 py-2.5 bg-indigo-900 text-white rounded-xl font-bold hover:bg-indigo-800 transition-all">
-                ถัดไป
-            </button>
-
-            <button x-show="step === 4" @click="submitOrder()" class="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-all shadow-md">
-                ยืนยันการสั่งอาหาร
-            </button>
-        </div>
-    </div>
-
     <script>
         function foodBookingApp() {
             return {
-                step: 1,
-                guestName: '',
-                guestPhone: '',
-                guestCount: '',
-                diningDate: '',
+                step: 4, // ตั้งค่าเริ่มต้นหน้าพรีวิวไว้ที่หน้า 4 ตามที่คุณต้องการ
+                guestName: 'คุณสมชาย VIP',
+                guestPhone: '089-123-4567',
+                guestCount: '4',
+                diningDate: '2026-11-10',
                 wantDinner: true,
-                wantBreakfast: false,
+                wantBreakfast: true,
                 dinnerTime: '18:00',
                 breakfastTime: '07:30',
-                additionalNotes: '',
+                additionalNotes: 'ขอไม่เผ็ดมาก และเพิ่มน้ำพริกเผา 1 ถ้วยครับ',
                 
+                activeDinnerTab: 0,
+                activeBreakfastTab: 0,
+                
+                // เมนูอาหารเย็น
                 dinnerMenu: [
                     {
-                        name: 'ประเภทผัด / ทอด',
+                        name: 'ผัด / ทอด',
                         items: [
-                            { name: 'ไข่เจียวหมูสับ', price: 60, qty: 0 },
-                            { name: 'แหนมซี่โครงหมูทอด', price: 150, qty: 0 },
-                            { name: 'ปีกไก่ทอดเกลือ', price: 150, qty: 0 },
-                            { name: 'ไก่ผัดเม็ดมะม่วงหิมพานต์', price: 180, qty: 0 },
-                            { name: 'ทะเลผัดฉ่า', price: 200, qty: 0 }
+                            { name: 'ไข่เจียว', price: 60, qty: 1, selectedVariant: 'หมูสับ', variants: ['หมูสับ', 'ไก่สับ', 'กุ้งสับ', 'ทะเล'] },
+                            { name: 'แหนมซี่โครงหมูทอด', price: 150, qty: 0, selectedVariant: 'หมู', variants: ['หมู'] },
+                            { name: 'ปีกไก่ทอดเกลือ', price: 150, qty: 0, selectedVariant: 'ไก่', variants: ['ไก่'] },
+                            { name: 'ไก่ผัดเม็ดมะม่วงหิมพานต์', price: 180, qty: 0, selectedVariant: 'ไก่', variants: ['ไก่', 'หมู'] },
+                            { name: 'ผัดฉ่า', price: 200, qty: 0, selectedVariant: 'ทะเล', variants: ['หมู', 'ไก่', 'กุ้ง', 'ปลาหมึก', 'ทะเล'] },
+                            { name: 'กะหล่ำปลีผัดน้ำปลา', price: 80, qty: 0, selectedVariant: 'ธรรมดา', variants: ['ธรรมดา', 'เบคอน'] }
                         ]
                     },
                     {
-                        name: '
+                        name: 'กับแกล้ม',
+                        items: [
+                            { name: 'ออเดิร์ฟ', price: 150, qty: 0, selectedVariant: 'รวม', variants: ['รวม'] },
+                            { name: 'ถั่วทอด / เม็ดมะม่วง', price: 80,
